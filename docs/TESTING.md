@@ -1,29 +1,19 @@
 # Testing
 
-## Running
+Tests use `pytest`. The only test module present is `tests/test_codec.py`; there are no registry or handler test modules in the repository.
 
-```sh
-uv run pytest --cov=grpc_health_kit   # tests with coverage report
-uv run python scripts/check.py      # every gate, as CI and the factory run it
+## Running Tests
+
+```bash
+pytest
 ```
 
-## Policy
+## Test Structure
 
-- Branch coverage of `src/grpc_health_kit` must stay at or above 80 %; the gate fails below it.
-- Tests exercise the public API (`import grpc_health_kit`) and assert every observable effect:
-  return values, raised exceptions and their messages.
-- Each bug fix starts with a failing test that reproduces it.
-- Tests are deterministic: no network, no wall clock, no dependence on test order.
+- `tests/test_codec.py`: covers `Codec.encode_request` and `Codec.decode_request` for a simple service, the 1024 UTF-8 byte boundary and the 1025-byte `service_too_long` failure, a non-ASCII service roundtrip, decoding of an empty request, unknown varint fields being skipped, a repeated field 1 where the last value wins, and the UTF-8 byte length limit.
+- `tests/test_codec.py`: covers `Codec.encode_response` and `Codec.decode_response` for `SERVING`, `NOT_SERVING` and `UNKNOWN`, decoding of an empty response, and an unknown status number becoming `UNKNOWN`.
+- The module uses `pytest.raises` for `HealthError` cases and plain assertions for the positive cases.
 
-## Tiers
+## Conformance
 
-- Local tier (every gate run, coverage measured here): unit and property tests, plus conformance on small
-  fixtures kept in the repository.
-- CI tier: conformance that needs an external tool or a download. Mark them `@pytest.mark.conformance`; `scripts/check.py` deselects them locally
-  (unless `FABRICA_CI=1`). The CI `conformance` job sets `FABRICA_CI=1` and runs the full suite. Tools are installed
-  by the optional `ci/conformance-setup.sh` (bash, CI only; verify every download against a pinned SHA-256), and
-  tagged tests skip cleanly when their tool is missing.
-
-## Layout
-
-`tests/test_<module>.py` mirrors each public module. Shared fixtures go in `tests/conftest.py`.
+No external tools, network access or downloaded files are required. The tests exercise the codec directly; no test module exercises `HealthRegistry`, `Watcher` or `generic_handler` in the repository.
