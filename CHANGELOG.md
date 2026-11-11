@@ -9,4 +9,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Added initial implementation of grpc_health_kit: gRPC health checking protocol without protobuf, including Codec, HealthRegistry, Watcher, and generic_handler.
 - Initial project structure from the factory utility template.

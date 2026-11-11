@@ -1,24 +1,24 @@
-"""
-The gRPC health checking protocol for Python without protoc or protobuf: a status registry, Check
-and Watch semantics, a hand-written wire codec and a grpcio handler adapter
-"""
+"""grpc_health_kit: gRPC health checking protocol without protobuf."""
 
-from __future__ import annotations
+import logging
 
-__all__ = ["__version__", "normalize"]
+from ._codec import Codec
+from ._errors import HealthError
+from ._handler import generic_handler
+from ._registry import HealthRegistry
+from ._serving_status import ServingStatus
+from ._watcher import Watcher
+
+__all__ = [
+    "Codec",
+    "HealthError",
+    "HealthRegistry",
+    "ServingStatus",
+    "Watcher",
+    "generic_handler",
+]
 
 __version__ = "0.1.0"
 
-
-def normalize(value: str) -> str:
-    """Return ``value`` trimmed and lower-cased.
-
-    Placeholder API created by the template: replace it with the utility's real behavior.
-
-    Raises:
-        ValueError: if ``value`` is empty or only whitespace.
-    """
-    cleaned = value.strip()
-    if not cleaned:
-        raise ValueError("value must not be empty")
-    return cleaned.lower()
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
